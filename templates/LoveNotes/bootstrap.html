@@ -49,7 +49,7 @@
                     <ul class="dropdown-menu text-small shadow">
                         <li><a class="dropdown-item" href={% url "LoveNotes:settings" %}>Settings</a></li>
                         <li><a class="dropdown-item" href="#">
-                            <form id="logout-form" method="post" action="/admin/logout/">
+                            <form id="logout-form" method="post" action="/admin/logout/" class="mb-0">
                                 {% csrf_token %}
                                 <button type="submit" class="btn p-0">Log out</button>
                             </form>
