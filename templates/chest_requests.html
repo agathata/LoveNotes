@@ -1,0 +1,17 @@
+{% if requests_list %}
+    {% for request in requests_list %}
+        <li class="d-flex align-items-center py-2 px-3">
+            {{ request.user1.username }}
+            <form class="m-0" method="post" action="{% url 'LoveNotes:accept-chest' chest_id=request.id %}">
+                {% csrf_token %}
+                <button class="btn btn-sm btn-outline-success m-1" type="submit">Accept</button>
+            </form>
+            <form class="m-0" method="post" action="{% url 'LoveNotes:delete-chest' chest_id=request.id %}">
+                {% csrf_token %}
+                <button class="btn btn-sm btn-outline-danger m-1" type="submit">Decline</button>
+            </form>
+        </li>
+    {% endfor %}
+{% else %}
+    <li class="dropdown-item">Woohoo, no notifications!</li>
+{% endif %}

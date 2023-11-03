@@ -1,1 +1,28 @@
-LoveNotes!!!!!
+{% extends "./bootstrap.html" %}
+
+{% block head %}
+<style>
+    .chest-box-size {
+        height: 200px;
+        width: 200px;
+        display: flex;
+        align-items: center;
+    }
+</style>
+{% endblock head %}
+
+{% block body %}
+<div class="d-flex flex-wrap">
+    {% for chest in owned_chest_list %}
+        <a href={% url "LoveNotes:chest-content" chest.id %} class="chest-box-size nav-link link-body-emphasis card shadow-sm m-1 p-2 justify-content-end">
+            Chest with {{ chest.other_user }}
+        </a>
+    {% endfor %}
+    <a href={% url "LoveNotes:create-chest" %} class="chest-box-size nav-link px-2 text-secondary justify-content-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor" class="bi bi-envelope-plus" viewBox="0 0 18 18">
+            <path fill-rule="evenodd" d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1.133l.941.502A2 2 0 0 1 16 5.4V9a.5.5 0 0 1 -1 0V7.383l-4.778 2.866l.956.573a.5.5 0 0 1-.514.858L8 10.083L1 14.283a1 1 0 0 0 .966.741H9a.5.5 0 1 1 0 1H2a2 2 0 0 1-2-2V5.4a2 2 0 0 1 1.059-1.765L2 3.133V2Zm0 2.267-.47.25A1 1 0 0 0 1 5.4v.817l1 .6v-2.55Zm1 3.15 3.75 2.25L8 8.917l1.25.75L13 7.417V2a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v5.417Zm11-.6 1-.6V5.4a1 1 0 0 0-.53-.882L14 4.267v2.55ZM8 2.982C9.664 1.309 13.825 4.236 8 8 2.175 4.236 6.336 1.31 8 2.982ZM1 13.116l4.778-2.867L1 7.383v5.734Z"></path>
+            <path d="M17.8 14.2a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 0 0 1 0v-1h1a.5.5 0 0 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
+        </svg>
+    </a>
+</div>
+{% endblock body %}

@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import *
+
+admin.site.register(Chest)
+admin.site.register(Item)
+admin.site.register(Note)
+admin.site.register(Settings)

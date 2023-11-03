@@ -1,19 +1,20 @@
-from django.urls import path, reverse_lazy
-from . import views
-from django.views.generic import TemplateView
+from django.urls import path
+from .views import *
+# from django.views.generic import TemplateView
 
 app_name = 'LoveNotes'
 
 urlpatterns = [
-    path('', views.MainView.as_view(), name='home'),
+    path('', MainView.as_view(), name='home'),
+    path('settings', SettingsView.as_view(), name='settings'),
+    path('settings/<int:pk>/account-delete', SettingsAccountDelete.as_view(), name='account-delete'),
+    path('chest/<int:chest_id>', ChestView.as_view(), name='chest-content'),
+    path('chest/create', ChestCreate.as_view(), name='create-chest'),
+    path('chest/<int:chest_id>/accept', ChestAccept.as_view(), name='accept-chest'),
+    path('chest/<int:chest_id>/delete', ChestDelete.as_view(), name='delete-chest'),
+    path('picture/<int:chest_id>/create', PictureCreate.as_view(), name='picture-create'),
+    path('picture/<int:picture_id>', stream_file, name='picture'),
+    path('note/<int:chest_id>/create', NoteCreate.as_view(), name='note-create'),
+    path('note/<int:note_id>/update', NoteUpdate.as_view(), name='note-update'),
+    path('item/<int:item_id>/delete', ItemDelete.as_view(), name='item-delete'),
 ]
-
-    # path('ad/<int:pk>', views.AdDetailView.as_view(), name='ad_detail'),
-    # path('ad/create', views.AdCreateView.as_view(success_url=reverse_lazy('ads:all')), name='ad_create'),
-    # path('ad/<int:pk>/update', views.AdUpdateView.as_view(success_url=reverse_lazy('ads:all')), name='ad_update'),
-    # path('ad/<int:pk>/delete', views.AdDeleteView.as_view(success_url=reverse_lazy('ads:all')), name='ad_delete'),
-    # path('ad_picture/<int:pk>', views.stream_file, name='ad_picture'),
-    # path('ad/<int:pk>/comment', views.CommentCreateView.as_view(), name='comment_create'),
-    # path('comment/<int:pk>/delete', views.CommentDeleteView.as_view(success_url=reverse_lazy('ads:all')), name='comment_delete'),
-    # path('ad/<int:pk>/favorite', views.AddFavoriteView.as_view(), name='ad_favorite'),
-    # path('ad/<int:pk>/unfavorite', views.DeleteFavoriteView.as_view(), name='ad_unfavorite'),

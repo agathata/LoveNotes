@@ -1,0 +1,14 @@
+{% extends "./bootstrap.html" %}
+
+{% block body %}
+<div class="mt-5 d-flex justify-content-center" style="height: 100vh;">
+    <div class="text-center">
+        <p>Send a request to start a new chest</p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-dark">Submit</button>
+        </form>
+    </div>
+</div>
+{% endblock body %}

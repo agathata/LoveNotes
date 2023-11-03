@@ -1,0 +1,27 @@
+{% extends "./bootstrap.html" %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+    <p>
+        <form class="m-5" action="" method="post" id="upload_form" enctype="multipart/form-data" style="width: 60%; position: relative; left: 20%;">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="d-flex justify-content-center">
+                <input class="btn btn-dark" type="submit" value="Submit">
+            </div>
+        </form>
+    </p>
+    <!-- https://stackoverflow.com/questions/2472422/django-file-upload-size-limit -->
+    <script>
+        document.getElementById("upload_form").addEventListener("submit", function() {
+            console.log('Checking file size');
+            if (window.File && window.FileReader && window.FileList && window.Blob) {
+                var file = document.getElementById('id_{{ form.upload_field_name }}').files[0];
+                if (file && file.size > {{ form.max_upload_limit }} ) {
+                    alert("File " + file.name + " of type " + file.type + " must be < {{ form.max_upload_limit_text }}");
+                    return false;
+                }
+            }
+        });
+    </script>
+{% endblock body %}
