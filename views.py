@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -144,7 +144,7 @@ def stream_file(request, picture_id):
     return response
 
 class NoteCreate(LoginRequiredMixin, CreateView):
-    template_name = "LoveNotes/picture-create.html"
+    template_name = "LoveNotes/note-create.html"
     def get_success_url(self):
         return reverse_lazy('LoveNotes:chest-content', kwargs={'chest_id': self.kwargs['chest_id']})
 
@@ -167,11 +167,26 @@ class NoteCreate(LoginRequiredMixin, CreateView):
         return redirect(self.get_success_url())
 
 class NoteUpdate(LoginRequiredMixin, UpdateView):
-    model = Note
+    template_name = "LoveNotes/note-create.html"
+    def get_success_url(self, note_id):
+        item = Item.objects.get(id=note_id)
+        return reverse_lazy('LoveNotes:chest-content', kwargs={'chest_id': item.chest_id})
 
-    def get_success_url(self):
-        note = self.get_object()
-        return reverse_lazy('LoveNotes:chest-content', kwargs={'chest_id': note.chest_id})
+    def get(self, request, **kwargs):
+        note = get_object_or_404(Note, item_id=kwargs['note_id'])
+        form = NoteForm(instance=note)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, **kwargs):
+        existing_note = get_object_or_404(Item, id=kwargs['note_id'])
+        form = NoteForm(request.POST)
+        if not form.is_valid():
+            ctx = {'form': form}
+            return render(request, self.template_name, ctx)
+        existing_note = form.save(commit=False)
+        existing_note.item_id = kwargs['note_id']
+        existing_note.save()
+        return redirect(self.get_success_url(kwargs['note_id']))
 
 class ItemDelete(LoginRequiredMixin, DeleteView):
     model = Item
