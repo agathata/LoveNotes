@@ -55,7 +55,7 @@ class SettingsAccountDelete(LoginRequiredMixin, DeleteView):
 class ChestView(LoginRequiredMixin, View):
     def get(self, request, **kwargs):
         logname_id = request.user.id
-        chest = Chest.objects.get(id=kwargs["chest_id"])
+        chest = get_object_or_404(Chest, id=kwargs["chest_id"])
         if chest.confirmed:
             if chest.user1.id == logname_id or chest.user2.id == logname_id:
                 if chest.user1.id == logname_id:
@@ -97,18 +97,20 @@ class ChestCreate(LoginRequiredMixin, View):
 
 class ChestAccept(LoginRequiredMixin, View):
     def post(self, request, chest_id):
-        chest = Chest.objects.get(pk=chest_id)
-        chest.confirmed = True
-        chest.save()
-
-        return redirect('LoveNotes:chest-content', chest_id=chest.id)
+        chest = get_object_or_404(Chest, id=chest_id)
+        if chest.user2 == request.user:
+            chest.confirmed = True
+            chest.save()
+            return redirect('LoveNotes:chest-content', chest_id=chest.id)
+        return HttpResponseForbidden("You do not have permission to access this page.")
 
 class ChestDelete(LoginRequiredMixin, View):
     def post(self, request, chest_id):
-        chest = Chest.objects.get(pk=chest_id)
-        chest.delete()
-
-        return redirect('LoveNotes:home')
+        chest = get_object_or_404(Chest, id=chest_id)
+        if chest.user1 == request.user or chest.user2 == request.user:
+            chest.delete()
+            return redirect('LoveNotes:home')
+        return HttpResponseForbidden("You do not have permission to access this page.")
 
 # Items
 class PictureCreate(LoginRequiredMixin, CreateView):
@@ -117,8 +119,11 @@ class PictureCreate(LoginRequiredMixin, CreateView):
         return reverse_lazy('LoveNotes:chest-content', kwargs={'chest_id': self.kwargs['chest_id']})
 
     def get(self, request, **kwargs):
-        form = PictureForm()
-        return render(request, self.template_name, {'form': form})
+        chest = get_object_or_404(Chest, id=kwargs["chest_id"])
+        if chest.user1 == request.user or chest.user2 == request.user:
+            form = PictureForm()
+            return render(request, self.template_name, {'form': form})
+        return HttpResponseForbidden("You do not have permission to access this page.")
 
     def post(self, request, **kwargs):
         form = PictureForm(request.POST, request.FILES or None)
@@ -126,22 +131,27 @@ class PictureCreate(LoginRequiredMixin, CreateView):
             ctx = {'form': form}
             return render(request, self.template_name, ctx)
         add_chest = get_object_or_404(Chest, id=kwargs['chest_id'])
-        # Create and save item object, add link to picture then save
-        fresh_item = Item(chest=add_chest, uploaded_by=request.user, is_picture=True)
-        fresh_item.save()
-        picture = form.save(commit=False)
-        picture.item = fresh_item
-        picture.save()
-        form.save_m2m()
-        return redirect(self.get_success_url())
+        if add_chest.user1 == request.user or add_chest.user2 == request.user:
+            # Create and save item object, add link to picture then save
+            fresh_item = Item(chest=add_chest, uploaded_by=request.user, is_picture=True)
+            fresh_item.save()
+            picture = form.save(commit=False)
+            picture.item = fresh_item
+            picture.save()
+            form.save_m2m()
+            return redirect(self.get_success_url())
+        return HttpResponseForbidden("You do not have permission to access this page.")
 
 def stream_file(request, picture_id):
     pic = get_object_or_404(Picture, item_id=picture_id)
-    response = HttpResponse()
-    response['Content-Type'] = pic.content_type
-    response['Content-Length'] = len(pic.content)
-    response.write(pic.content)
-    return response
+    chest = pic.item.chest
+    if chest.user1 == request.user or chest.user2 == request.user:
+        response = HttpResponse()
+        response['Content-Type'] = pic.content_type
+        response['Content-Length'] = len(pic.content)
+        response.write(pic.content)
+        return response
+    return HttpResponseForbidden("You do not have permission to access this page.")
 
 class NoteCreate(LoginRequiredMixin, CreateView):
     template_name = "LoveNotes/note-create.html"
@@ -149,8 +159,11 @@ class NoteCreate(LoginRequiredMixin, CreateView):
         return reverse_lazy('LoveNotes:chest-content', kwargs={'chest_id': self.kwargs['chest_id']})
 
     def get(self, request, **kwargs):
-        form = NoteForm()
-        return render(request, self.template_name, {"form": form})
+        chest = get_object_or_404(Chest, id=kwargs["chest_id"])
+        if chest.user1 == request.user or chest.user2 == request.user:
+            form = NoteForm()
+            return render(request, self.template_name, {"form": form})
+        return HttpResponseForbidden("You do not have permission to access this page.")
 
     def post(self, request, **kwargs):
         form = NoteForm(request.POST)
@@ -158,13 +171,15 @@ class NoteCreate(LoginRequiredMixin, CreateView):
             ctx = {'form': form}
             return render(request, self.template_name, ctx)
         add_chest = get_object_or_404(Chest, id=kwargs['chest_id'])
-        # Create and save item object, add link to picture then save
-        fresh_item = Item(chest=add_chest, uploaded_by=request.user, is_picture=False)
-        fresh_item.save()
-        note = form.save(commit=False)
-        note.item = fresh_item
-        note.save()
-        return redirect(self.get_success_url())
+        if add_chest.user1 == request.user or add_chest.user2 == request.user:
+            # Create and save item object, add link to picture then save
+            fresh_item = Item(chest=add_chest, uploaded_by=request.user, is_picture=False)
+            fresh_item.save()
+            note = form.save(commit=False)
+            note.item = fresh_item
+            note.save()
+            return redirect(self.get_success_url())
+        return HttpResponseForbidden("You do not have permission to access this page.")
 
 class NoteUpdate(LoginRequiredMixin, UpdateView):
     template_name = "LoveNotes/note-create.html"
@@ -174,26 +189,32 @@ class NoteUpdate(LoginRequiredMixin, UpdateView):
 
     def get(self, request, **kwargs):
         note = get_object_or_404(Note, item_id=kwargs['note_id'])
-        form = NoteForm(instance=note)
-        return render(request, self.template_name, {'form': form})
+        if note.item.uploaded_by == request.user:
+            form = NoteForm(instance=note)
+            return render(request, self.template_name, {'form': form})
+        return HttpResponseForbidden("You do not have permission to access this page.")
 
     def post(self, request, **kwargs):
-        existing_note = get_object_or_404(Item, id=kwargs['note_id'])
-        form = NoteForm(request.POST)
-        if not form.is_valid():
-            ctx = {'form': form}
-            return render(request, self.template_name, ctx)
-        existing_note = form.save(commit=False)
-        existing_note.item_id = kwargs['note_id']
-        existing_note.save()
-        return redirect(self.get_success_url(kwargs['note_id']))
+        existing_note = get_object_or_404(Note, item_id=kwargs['note_id'])
+        if existing_note.item.uploaded_by == request.user:
+            form = NoteForm(request.POST)
+            if not form.is_valid():
+                ctx = {'form': form}
+                return render(request, self.template_name, ctx)
+            existing_note = form.save(commit=False)
+            existing_note.item_id = kwargs['note_id']
+            existing_note.save()
+            return redirect(self.get_success_url(kwargs['note_id']))
+        return HttpResponseForbidden("You do not have permission to access this page.")
 
 class ItemDelete(LoginRequiredMixin, DeleteView):
     model = Item
 
     def post(self, request, **kwargs):
         item = get_object_or_404(Item, id=kwargs["item_id"])
-        chest_id = item.chest.id
-        item.delete()
-
-        return redirect(reverse_lazy('LoveNotes:chest-content', kwargs={'chest_id': chest_id}))
+        chest = item.chest
+        if chest.user1 == request.user or chest.user2 == request.user:
+            chest_id = item.chest.id
+            item.delete()
+            return redirect(reverse_lazy('LoveNotes:chest-content', kwargs={'chest_id': chest_id}))
+        return HttpResponseForbidden("You do not have permission to access this page.")
