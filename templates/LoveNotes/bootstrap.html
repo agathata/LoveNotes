@@ -1,13 +1,31 @@
 {% load my_tags %}
+{% load static %}
 
-<html>
+<html data-bs-theme={{ user.settings.get_light_dark_device_display }}>
+    {% if user.settings.light_dark_device == 3 %}
+        <script>
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-bs-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+            }
+        </script>
+    {% endif %}
     <head>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        <script type="text/javascript" src={% static 'identiheart.js' %}></script>
         <style>
             .main-body-content {
                 box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
                 min-height: 100%;
+            }
+            .dropdown-toggle::after {
+                display: inline;
+            }
+            #user-icon {
+                height: 45px;
+                width: 45px;
             }
         </style>
         {% block head %}{% endblock %}
@@ -44,7 +62,7 @@
 
                 <div class="flex-shrink-0 dropdown mx-3">
                     <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Heart_corazón.svg/800px-Heart_corazón.svg.png" width="45" height="45">
+                        <canvas id="user-icon" height="500" width="500"></canvas>
                     </a>
                     <ul class="dropdown-menu text-small shadow">
                         <li><a class="dropdown-item" href={% url "LoveNotes:settings" %}>Settings</a></li>
@@ -62,4 +80,12 @@
             {% block body %}{% endblock %}
         </div>
     </body>
+    <script>
+        var c = document.getElementById("user-icon");
+        var ctx = c.getContext("2d");
+        var h = new IdentiHeart(c, ctx);
+        h.setUsername("{{ user.username }}");
+        h.init();
+        h.draw();
+    </script>
 </html>

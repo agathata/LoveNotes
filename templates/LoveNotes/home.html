@@ -8,6 +8,10 @@
         display: flex;
         align-items: center;
     }
+    .chest-icon {
+        height: 150px;
+        width: 150px;
+    }
 </style>
 {% endblock head %}
 
@@ -15,8 +19,17 @@
 <div class="d-flex flex-wrap">
     {% for chest in owned_chest_list %}
         <a href={% url "LoveNotes:chest-content" chest.id %} class="chest-box-size nav-link link-body-emphasis card shadow-sm m-1 p-2 justify-content-end">
+            <canvas class="chest-icon" id="chest-icon-{{ forloop.counter }}" height="500" width="500"></canvas>
             Chest with {{ chest.other_user }}
         </a>
+        <script>
+            var c = document.getElementById("chest-icon-{{ forloop.counter }}");
+            var ctx = c.getContext("2d");
+            var h = new IdentiHeart(c, ctx);
+            h.setUsername("{{ chest.user1.first_name }}&{{ chest.user2.first_name }}");
+            h.init();
+            h.draw();
+        </script>
     {% endfor %}
     <a href={% url "LoveNotes:create-chest" %} class="chest-box-size nav-link px-2 text-secondary justify-content-center">
         <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor" class="bi bi-envelope-plus" viewBox="0 0 18 18">

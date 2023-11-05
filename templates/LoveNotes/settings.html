@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-center">
         <div data-toggle="buttons">
             {% for choice in form.light_dark_device %}
-                <label class="btn btn-outline-dark m-2">
+                <label class="btn btn-outline-dark m-2 link-body-emphasis">
                     {{ choice.tag }}
                     {% if forloop.counter == 1 %}
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sun" viewBox="0 0 16 16">

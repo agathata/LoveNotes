@@ -41,7 +41,7 @@ class Note(models.Model):
 
 class Settings(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, primary_key=True, on_delete=models.CASCADE)
-    light_dark_device = models.IntegerField(choices=[(1, "light"), (2, "dark"), (3, "device")], default=1)
+    light_dark_device = models.IntegerField(choices=[(1, "light"), (2, "dark"), (3, "device")], default=3)
 
     def __str__(self):
         return f"user {self.user.username} settings"

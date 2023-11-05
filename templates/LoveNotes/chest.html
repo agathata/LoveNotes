@@ -17,11 +17,26 @@
         -webkit-line-clamp: 16; /* Adjust this number as needed, it represents the number of lines before truncation */
         -webkit-box-orient: vertical;
     }
+    #chest-icon {
+        width: 30px;
+        height: 30px;
+    }
 </style>
 {% endblock head %}
 
 {% block body %}
-<h4 class="text-center text-muted mb-3">{{ log_user.first_name }} & {{ other_user.first_name }}</h4>
+<h4 class="text-center text-muted mb-3 d-flex justify-content-center">
+    <canvas id="chest-icon" class="mx-1" height="500" width="500"></canvas>
+    {{ chest.user1.first_name }} & {{ chest.user2.first_name }}
+</h4>
+<script>
+    var c = document.getElementById("chest-icon");
+    var ctx = c.getContext("2d");
+    var h = new IdentiHeart(c, ctx);
+    h.setUsername("{{ chest.user1.first_name }}&{{ chest.user2.first_name }}");
+    h.init();
+    h.draw();
+</script>
 <div id="myCarousel" class="carousel slide mb-6" data-interval="false">
     <div class="carousel-indicators">
         {% for item in item_list %}
@@ -31,7 +46,7 @@
     <div class="carousel-inner">
         {% if item_list %}
             {% for item in item_list %}
-                <div class="carousel-item {% if forloop.counter == 1 %}active{% endif %} card" style="background: var(--bs-secondary-color);">
+                <div class="carousel-item {% if forloop.counter == 1 %}active{% endif %} card" style="background: #585c5e;">
                     <svg class="bd-placeholder-img" width="100%" height="60%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
                         <rect width="100%" height="100%" fill="#00000000"></rect>
                     </svg>
@@ -41,7 +56,7 @@
                                 <img height="100%" src="{% url 'LoveNotes:picture' item.id %}">
                             </div>
                         {% else %}
-                            <div class="carousel-caption">
+                            <div class="carousel-caption text-light">
                                 <p class="truncate-text">{{ item.note.text }}</p>
                             </div>
                         {% endif %}

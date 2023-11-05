@@ -58,12 +58,8 @@ class ChestView(LoginRequiredMixin, View):
         chest = get_object_or_404(Chest, id=kwargs["chest_id"])
         if chest.confirmed:
             if chest.user1.id == logname_id or chest.user2.id == logname_id:
-                if chest.user1.id == logname_id:
-                    other_user = chest.user2
-                else:
-                    other_user = chest.user1
                 item_list = chest.items.all()
-                return render(request, "LoveNotes/chest.html", {"chest_id": kwargs["chest_id"], "item_list": item_list, "log_user": request.user, "other_user": other_user})
+                return render(request, "LoveNotes/chest.html", {"chest_id": kwargs["chest_id"], "item_list": item_list, "log_user": request.user, "chest": chest})
         return HttpResponseForbidden("You do not have permission to access this page.")
 
 
