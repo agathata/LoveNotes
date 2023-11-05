@@ -20,6 +20,11 @@ def get_notifications(request):
 class MainView(LoginRequiredMixin, View):
     def get(self, request):
         logname_id = request.user.id
+        try:
+            settings = Settings.objects.get(user_id=logname_id)
+        except Settings.DoesNotExist:
+            settings = Settings(user_id=logname_id)
+            settings.save()
         condition = Q(Q(user1__id=logname_id) | Q(user2__id=logname_id), confirmed=True)
         ctx = {
             "owned_chest_list": Chest.objects.filter(condition).select_related()
@@ -47,9 +52,6 @@ class SettingsView(LoginRequiredMixin, View):
             return redirect('LoveNotes:settings')
 
         return render(request, 'LoveNotes/settings.html', {'form': form})
-
-class SettingsAccountDelete(LoginRequiredMixin, DeleteView):
-    pass
 
 # Chest
 class ChestView(LoginRequiredMixin, View):

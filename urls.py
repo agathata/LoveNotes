@@ -7,7 +7,6 @@ app_name = 'LoveNotes'
 urlpatterns = [
     path('', MainView.as_view(), name='home'),
     path('settings', SettingsView.as_view(), name='settings'),
-    path('settings/<int:pk>/account-delete', SettingsAccountDelete.as_view(), name='account-delete'),
     path('chest/<int:chest_id>', ChestView.as_view(), name='chest-content'),
     path('chest/create', ChestCreate.as_view(), name='create-chest'),
     path('chest/<int:chest_id>/accept', ChestAccept.as_view(), name='accept-chest'),
