@@ -20,7 +20,7 @@
     {% for chest in owned_chest_list %}
         <a href={% url "LoveNotes:chest-content" chest.id %} class="chest-box-size nav-link link-body-emphasis card shadow-sm m-1 p-2 justify-content-end">
             <canvas class="chest-icon" id="chest-icon-{{ forloop.counter }}" height="500" width="500"></canvas>
-            Chest with {{ chest.other_user }}
+            Chest with {{ chest.other_user.first_name }}
         </a>
         <script>
             var c = document.getElementById("chest-icon-{{ forloop.counter }}");
