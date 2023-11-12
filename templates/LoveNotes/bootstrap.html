@@ -31,11 +31,11 @@
         {% block head %}{% endblock %}
     </head>
     <body>
-        <header class="p-1 d-flex">
+        <header class="p-1 d-flex justify-content-between">
             <div id="left-stuff" class="me-lg-auto mx-3 fs-4 d-flex align-items-center">
                 <a href={% url "LoveNotes:home" %} class="link-body-emphasis text-decoration-none">LoveNotes</a>
             </div>
-            <div id="right-stuff" class="d-flex align-items-center justify-content-end">
+            <div id="right-stuff" class="d-flex align-items-center">
                 <ul class="nav col-12 col-lg-auto align-items-center">
                     <li><a href={% url "LoveNotes:home" %} class="nav-link px-2 link-body-emphasis">
                         <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
@@ -58,17 +58,18 @@
                             {% display_notifications %}
                         </ul>
                     </li>
+                    <li>
+                        <div class="dropdown mx-3">
+                            <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <canvas id="user-icon" height="500" width="500"></canvas>
+                            </a>
+                            <ul class="dropdown-menu text-small shadow">
+                                <li><a class="dropdown-item" href={% url "LoveNotes:settings" %}>Settings</a></li>
+                                <li><a class="dropdown-item" href={% url "logout" %}>Log out</a></li>
+                            </ul>
+                        </div>
+                    </li>
                 </ul>
-
-                <div class="flex-shrink-0 dropdown mx-3">
-                    <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <canvas id="user-icon" height="500" width="500"></canvas>
-                    </a>
-                    <ul class="dropdown-menu text-small shadow">
-                        <li><a class="dropdown-item" href={% url "LoveNotes:settings" %}>Settings</a></li>
-                        <li><a class="dropdown-item" href={% url "logout" %}>Log out</a></li>
-                    </ul>
-                </div>
             </div>
         </header>
         <div class="main-body-content p-3">
